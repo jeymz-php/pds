@@ -74,7 +74,6 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <script>
     $(document).ready(function() {
-        // Fetch all PDS data
         $.ajax({
             url: 'fetch_pds.php',
             type: 'GET',

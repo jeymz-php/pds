@@ -1,23 +1,18 @@
 <?php
-// save_personalinfo.php
-session_start(); // Add session_start at the beginning
+session_start();
 header('Content-Type: application/json');
 
-// Database connection
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "db_pds";
 
-// Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die(json_encode(['status' => 'error', 'message' => 'Connection failed: ' . $conn->connect_error]));
 }
 
-// Get POST data for personal information
 $surname = $_POST['surname'] ?? '';
 $firstname = $_POST['firstname'] ?? '';
 $middlename = $_POST['middlename'] ?? '';
@@ -36,7 +31,6 @@ $sss = $_POST['sss'] ?? '';
 $tin = $_POST['tin'] ?? '';
 $agencyempno = $_POST['agency_no'] ?? '';
 
-// Get citizenship data
 $citizenship = $_POST['citizenship'] ?? '';
 $dualcitizenship = '';
 if ($citizenship === 'Dual Citizenship' && isset($_POST['dual_type']) && is_array($_POST['dual_type'])) {
@@ -48,7 +42,6 @@ if ($citizenship === 'Dual Citizenship' && isset($_POST['dual_type']) && is_arra
     }
 }
 
-// Get residential address data
 $res_house = $_POST['res_house'] ?? '';
 $res_street = $_POST['res_street'] ?? '';
 $res_subdi = $_POST['res_subdivision'] ?? '';
@@ -57,7 +50,6 @@ $res_city = $_POST['res_city'] ?? '';
 $res_province = $_POST['res_province'] ?? '';
 $res_zipcode = $_POST['res_zip'] ?? '';
 
-// Get permanent address data
 $per_house = $_POST['perm_house'] ?? '';
 $per_street = $_POST['perm_street'] ?? '';
 $per_subdi = $_POST['perm_subdivision'] ?? '';
@@ -69,20 +61,17 @@ $per_telno = $_POST['perm_telno'] ?? '';
 $per_mobileno = $_POST['perm_mobileno'] ?? '';
 $per_email = $_POST['perm_email'] ?? '';
 
-// Validate required fields
 if (empty($surname) || empty($firstname) || empty($dob) || empty($pob) || empty($sex) || empty($civilstatus) || empty($citizenship)) {
     echo json_encode(['status' => 'error', 'message' => 'Surname, First Name, Date of Birth, Place of Birth, Sex, Civil Status, and Citizenship are required']);
     exit;
 }
 
-// Get the next CSID value
 $next_csid = 1;
 $result = $conn->query("SELECT MAX(CSID) as max_csid FROM pds_personalinfo");
 if ($result && $row = $result->fetch_assoc()) {
     $next_csid = $row['max_csid'] + 1;
 }
 
-// Prepare and bind - CORRECTED for 37 columns (37 question marks)
 $sql = "INSERT INTO pds_personalinfo (
     CSID, cs_surname, cs_firstname, cs_middlename, cs_nameext, 
     cs_dateofbirth, cs_placeofbirth, cs_sex, cs_civilstatus, 
@@ -101,7 +90,6 @@ if (!$stmt) {
     exit;
 }
 
-// Bind parameters - 37 parameters total (37 "s" characters)
 $stmt->bind_param("issssssssssssssssssssssssssssssssssss", 
     $next_csid, 
     $surname, $firstname, $middlename, $nameext,
@@ -114,12 +102,9 @@ $stmt->bind_param("issssssssssssssssssssssssssssssssssss",
     $per_telno, $per_mobileno, $per_email
 );
 
-// Execute the statement
 if ($stmt->execute()) {
-    // Store in session for future use
     $_SESSION['csid'] = $next_csid;
     
-    // Return success response with CSID
     echo json_encode([
         'status' => 'success', 
         'message' => 'Personal information saved successfully', 
@@ -132,7 +117,6 @@ if ($stmt->execute()) {
     ]);
 }
 
-// Close connections
 $stmt->close();
 $conn->close();
 ?>
