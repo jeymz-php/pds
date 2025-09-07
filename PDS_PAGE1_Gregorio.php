@@ -508,6 +508,7 @@
     <!-- Save Button -->
     <div class="text-center my-4">
       <button type="button" id="saveButton" class="btn btn-primary btn-lg">Save</button>
+      <a href="view_pds.php" class="btn btn-secondary btn-lg">View Saved PDS</a>
     </div>
     
   </form>
